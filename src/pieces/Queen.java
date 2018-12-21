@@ -161,10 +161,5 @@ public class Queen extends Piece {
 	public void castleMove() {
 
 	}
-
-	@Override
-	public boolean castlePossible() {
-		return false;
-
-	}
+	
 }

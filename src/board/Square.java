@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import marker.CastleMarker;
 import marker.ChessMove;
 import marker.MovementPredict;
 import marker.QuitBlock;
@@ -19,6 +20,7 @@ public class Square extends Group {
 	private MovementPredict mp;
 	private ChessMove ch;
 	private QuitBlock qb;
+	private CastleMarker cm;
 	private Color bgColor;
 	private Rectangle sq;
 	private int CordX;
@@ -28,7 +30,6 @@ public class Square extends Group {
 	private static boolean chessCheck;
 	public static boolean chessMateCheck;
 	private static boolean isChess;
-	public static boolean isChessMate;
 	private static boolean willSurrender;
 	private static Pawn passantPawn;
 	public static Piece tempPiece;
@@ -38,8 +39,6 @@ public class Square extends Group {
 
 	public Square(Color c, int x, int y) {
 		resetVariables();
-		chessPredicts.clear();
-		tempSquareList.clear();
 		CordX = x;
 		CordY = y;
 		bgColor = c;
@@ -53,11 +52,10 @@ public class Square extends Group {
 				} else if (!ChessBoard.graveYardExists()) {
 					if (hasQuitBlock()) {
 						willSurrender = true;
-
 						ChessBoard.checkSurrender();
 					}
 					if (piece.getColor() == playerTurn) {
-						if (canCastle() && !isChess) {
+						if (hasCastleMarker()) {
 							doCastle();
 						}
 						ChessBoard.removePredictsq(tempSquare);
@@ -109,6 +107,8 @@ public class Square extends Group {
 		willSurrender = false;
 		passantPawn = null;
 		tempPiece = null;
+		chessPredicts.clear();
+		tempSquareList.clear();
 
 	}
 
@@ -236,7 +236,6 @@ public class Square extends Group {
 			Square s = (Square) k.getParent();
 			k.showMove(s);
 			k.removeMove(s);
-			System.out.println(k.chessMate());
 			if (k.chessMate()) {
 				Color c = s.getPiece().getColor();
 				ChessMateCheck(c);
@@ -249,39 +248,6 @@ public class Square extends Group {
 		}
 
 	}
-
-	/*
-	 * private boolean checkPredictsKing(Square sq) { for (int i = 1; i <=
-	 * ChessBoard.getSize() + 1; i++) { try { Square s = null; switch (i) { case 1:
-	 * s = ChessBoard.getSquare(sq.getCordX(), sq.getCordY() - 1); break;
-	 * 
-	 * case 2: s = ChessBoard.getSquare(sq.getCordX() - 1, sq.getCordY() - 1);
-	 * break;
-	 * 
-	 * case 3: s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY() - 1);
-	 * break;
-	 * 
-	 * case 4: s = ChessBoard.getSquare(sq.getCordX() - 1, sq.getCordY()); break;
-	 * 
-	 * case 5: s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY()); break;
-	 * 
-	 * case 6: s = ChessBoard.getSquare(sq.getCordX(), sq.getCordY() + 1); break;
-	 * 
-	 * case 7: s = ChessBoard.getSquare(sq.getCordX() - 1, sq.getCordY() + 1);
-	 * break;
-	 * 
-	 * case 8: s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY() + 1);
-	 * break;
-	 * 
-	 * default: break; } if (s.hasPredict() && !s.hasChessMarker()) { return false;
-	 * } } catch (Exception e) {
-	 * 
-	 * }
-	 * 
-	 * } return true;
-	 * 
-	 * }
-	 */
 
 	private void checkIfPassantTurn() {
 		if (tempSquare.hasPiece()) {
@@ -392,6 +358,13 @@ public class Square extends Group {
 		}
 	}
 
+	public void addCastleMarker() {
+		if (!hasCastleMarker() && !isChessNow()) {
+			cm = new CastleMarker();
+			getChildren().add(cm);
+		}
+	}
+
 	public static void removeChessMove() {
 		for (int x = 0; x < ChessBoard.getSize(); x++) {
 			for (int y = 0; y < ChessBoard.getSize(); y++) {
@@ -421,6 +394,11 @@ public class Square extends Group {
 		qb = null;
 	}
 
+	public void removeCastleMarker() {
+		getChildren().remove(cm);
+		cm = null;
+	}
+
 	public void removePiece() {
 		if (!(getPiece() instanceof Pawn)) {
 			Piece.addGraveyard(piece);
@@ -443,6 +421,10 @@ public class Square extends Group {
 
 	private boolean hasQuitBlock() {
 		return qb != null;
+	}
+
+	private boolean hasCastleMarker() {
+		return cm != null;
 	}
 
 	public static boolean isChessNow() {
@@ -485,6 +467,10 @@ public class Square extends Group {
 		playerTurn = Color.WHITE;
 	}
 
+	public Piece getPiece() {
+		return piece;
+	}
+
 	public static String playerTurn() {
 		if (playerTurn == Color.WHITE) {
 			return "black";
@@ -492,10 +478,6 @@ public class Square extends Group {
 			return "white";
 		}
 
-	}
-
-	public Piece getPiece() {
-		return piece;
 	}
 
 	public boolean OppositeColor(Piece p) {
@@ -506,32 +488,50 @@ public class Square extends Group {
 		}
 	}
 
-	public boolean canCastle() {
-		if (piece instanceof Rook) {
-			if (tempSquare.hasPiece()) {
-				if (tempSquare.piece instanceof King) {
-					if (tempSquare.piece.castlePossible() && piece.castlePossible()) {
-						if (getCordX() == 0) {
-							for (int i = 1; i < 3; i++) {
-								if (ChessBoard.getSquare(getCordX() + i, getCordY()).hasPiece()) {
-									return false;
-								}
-							}
-							return true;
-						} else if (getCordX() == 7) {
-							for (int i = 1; i < 3; i++) {
-								if (ChessBoard.getSquare(getCordX() - i, getCordY()).hasPiece()) {
-									return false;
-								}
-							}
-							return true;
-						}
+	public void canCastle(King k) {
+		Square sq = null;
+		boolean beAdded = true;
+		for (int j = 1; j < 4; j++) {
+			sq = ChessBoard.getSquare(getCordX() + j, getCordY());
 
+			if (sq.hasPiece()) {
+				if (sq.getCordX() != 7) {
+					beAdded = false;
+				} else if (sq.getPiece() instanceof Rook) {
+					Rook r = (Rook) sq.getPiece();
+					if (!r.castlePossible()) {
+						beAdded = false;
 					}
 				}
+
 			}
 		}
-		return false;
+		
+		if (beAdded) {
+			sq.addCastleMarker();
+		}
+
+		beAdded = true;
+		for (int i = 1; i < 5; i++) {
+			sq = ChessBoard.getSquare(getCordX() - i, getCordY());
+			System.out.println(sq.getCordX());
+			if (sq.hasPiece()) {
+				if (sq.getCordX() != 0) {
+					beAdded = false;
+				} else if (sq.getPiece() instanceof Rook) {
+					Rook r = (Rook) sq.getPiece();
+					if (!r.castlePossible()) {
+						beAdded = false;
+					}
+				}
+
+			}
+		}
+
+		if (beAdded) {
+			sq.addCastleMarker();
+		}
+
 	}
 
 	private void doCastle() {

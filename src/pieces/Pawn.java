@@ -224,12 +224,6 @@ public class Pawn extends Piece {
 
 	}
 
-	@Override
-	public boolean castlePossible() {
-		return false;
-
-	}
-
 	public void isPassant() {
 		enPassant = true;
 

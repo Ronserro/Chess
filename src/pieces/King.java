@@ -6,7 +6,7 @@ import board.Square;
 public class King extends Piece {
 
 	boolean hasMoved;
-	
+
 	boolean checkChessMate;
 
 	public King(int i) {
@@ -58,6 +58,9 @@ public class King extends Piece {
 				case 9:
 					if (!Square.chessCheck()) {
 						s = ChessBoard.getSquare(sq.getCordX(), sq.getCordY());
+						if (castlePossible()) {
+							s.canCastle(this);
+						}
 						s.addQuitBlock();
 						s = null;
 					}
@@ -85,7 +88,7 @@ public class King extends Piece {
 
 	@Override
 	public void removeMove(Square sq) {
-		for (int i = 1; i <= ChessBoard.getSize() + 1; i++) {
+		for (int i = 1; i <= ChessBoard.getSize() + 3; i++) {
 			try {
 				Square s = null;
 				switch (i) {
@@ -120,7 +123,20 @@ public class King extends Piece {
 				case 8:
 					s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY() + 1);
 					break;
+
 				case 9:
+					s = ChessBoard.getSquare(0, sq.getCordY());
+					s.removeCastleMarker();
+					s = null;
+					break;
+
+				case 10:
+					s = ChessBoard.getSquare(7, sq.getCordY());
+					s.removeCastleMarker();
+					s = null;
+					break;
+
+				case 11:
 					s = ChessBoard.getSquare(sq.getCordX(), sq.getCordY());
 					s.removeQuitBlock();
 					break;
@@ -128,7 +144,7 @@ public class King extends Piece {
 				default:
 					break;
 				}
-				
+
 				if (s.hasPredict() && !s.hasChessMarker()) {
 					checkChessMate = false;
 				}
@@ -144,18 +160,16 @@ public class King extends Piece {
 	@Override
 	public void castleMove() {
 		hasMoved = true;
-
 	}
 
-	@Override
 	public boolean castlePossible() {
 		return !hasMoved;
 	}
-	
+
 	public boolean chessMate() {
 		return checkChessMate;
 	}
-	
+
 	public void changeChess() {
 		checkChessMate = true;
 	}

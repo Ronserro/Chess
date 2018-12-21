@@ -125,11 +125,5 @@ public class Bishop extends Piece {
 
 	}
 
-	@Override
-	public boolean castlePossible() {
-		return false;
-		// TODO Auto-generated method stub
-
-	}
 
 }

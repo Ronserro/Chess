@@ -10,6 +10,4 @@ public interface Moveable {
 
 	void castleMove();
 
-	boolean castlePossible();
-
 }

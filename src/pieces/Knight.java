@@ -140,15 +140,8 @@ public class Knight extends Piece {
 
 	@Override
 	public void castleMove() {
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
-	public boolean castlePossible() {
-		return false;
-		// TODO Auto-generated method stub
-
-	}
 
 }
