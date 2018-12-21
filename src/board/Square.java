@@ -28,7 +28,6 @@ public class Square extends Group {
 	private static Square tempSquare;
 	private static Color playerTurn;
 	private static boolean chessCheck;
-	public static boolean chessMateCheck;
 	private static boolean isChess;
 	private static boolean willSurrender;
 	private static Pawn passantPawn;
@@ -514,7 +513,6 @@ public class Square extends Group {
 		beAdded = true;
 		for (int i = 1; i < 5; i++) {
 			sq = ChessBoard.getSquare(getCordX() - i, getCordY());
-			System.out.println(sq.getCordX());
 			if (sq.hasPiece()) {
 				if (sq.getCordX() != 0) {
 					beAdded = false;

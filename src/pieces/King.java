@@ -5,9 +5,8 @@ import board.Square;
 
 public class King extends Piece {
 
-	boolean hasMoved;
-
-	boolean checkChessMate;
+	private boolean hasMoved;
+	private boolean checkChessMate;
 
 	public King(int i) {
 

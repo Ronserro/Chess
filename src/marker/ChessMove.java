@@ -8,7 +8,6 @@ import javafx.scene.shape.Rectangle;
 public class ChessMove extends Group {
 
 	public ChessMove() {
-
 		Rectangle r = new Rectangle(20, 20, Color.ORANGE);
 		this.setTranslateX(Square.SIZE / 2.6);
 		this.setTranslateY(Square.SIZE / 2.6);

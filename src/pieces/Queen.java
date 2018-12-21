@@ -5,7 +5,7 @@ import board.Square;
 
 public class Queen extends Piece {
 
-	int chessLine;
+	private int chessLine;
 
 	public Queen(int i) {
 

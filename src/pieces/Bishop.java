@@ -5,7 +5,7 @@ import board.Square;
 
 public class Bishop extends Piece {
 
-	int chessLine;
+	private int chessLine;
 
 	public Bishop(int i) {
 
@@ -124,6 +124,5 @@ public class Bishop extends Piece {
 		// TODO Auto-generated method stub
 
 	}
-
 
 }

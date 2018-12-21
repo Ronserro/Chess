@@ -5,8 +5,8 @@ import board.Square;
 
 public class Rook extends Piece {
 
-	boolean hasMoved;
-	int chessLine;
+	private boolean hasMoved;
+	private int chessLine;
 
 	public Rook(int i) {
 
@@ -77,7 +77,7 @@ public class Rook extends Piece {
 					}
 
 				} catch (Exception e) {
-					break;
+					break loop1;
 				}
 			}
 		}

@@ -6,8 +6,8 @@ import javafx.scene.paint.Color;
 
 public class Pawn extends Piece {
 
-	boolean enPassant;
-	boolean canBeEnPassant;
+	private boolean enPassant;
+	private boolean canBeEnPassant;
 
 	public Pawn(int i) {
 
@@ -28,7 +28,7 @@ public class Pawn extends Piece {
 						s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY() - 1);
 					} else if (i == 2) { // Passant
 						s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY());
-						if (s.hasPiece()) {
+						if (s.hasPiece() && !Square.isChessNow()) {
 							if (s.OppositeColor(this) && s.passantPredict() && !Square.isChessNow()) {
 								canBeEnPassant = true;
 								s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY() - 1);
@@ -49,11 +49,22 @@ public class Pawn extends Piece {
 					}
 
 					if (Square.chessCheck()) {
-
 						s.addPredict();
-
-					} else if (s.hasPiece()) {
-						if (s.OppositeColor(this) && !Square.isChessNow() || s.getPiece().pieceMakesChess()) {
+					}
+					if (s.hasPiece()) {
+						if (Square.chessCheck() && !thisChess) {
+							if (s.isKingHere() && s.OppositeColor(this)) {
+								s.itsChessNow();
+								thisChess = true;
+								Square.tempPiece = this;
+								this.showMove(sq);
+							}
+						}
+						if (thisChess && s.isKingHere()) {
+							s.addChessMove();
+						}
+						if (!thisChess
+								&& (s.OppositeColor(this) && !Square.isChessNow() || s.getPiece().pieceMakesChess())) {
 							s.addPredict();
 						}
 					}
@@ -98,8 +109,8 @@ public class Pawn extends Piece {
 						s = ChessBoard.getSquare(sq.getCordX() - 1, sq.getCordY() + 1);
 					} else if (i == 2) { // Passant
 						s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY());
-						if (s.hasPiece()) {
-							if (s.OppositeColor(this) && s.passantPredict() && !Square.isChessNow()) {
+						if (s.hasPiece() && !Square.isChessNow()) {
+							if (s.OppositeColor(this) && s.passantPredict()) {
 								canBeEnPassant = true;
 								s = ChessBoard.getSquare(sq.getCordX() + 1, sq.getCordY() + 1);
 								s.addPredict();
@@ -119,8 +130,23 @@ public class Pawn extends Piece {
 					}
 					if (Square.chessCheck()) {
 						s.addPredict();
-					} else if (s.hasPiece()) {
-						if (s.OppositeColor(this) && !Square.isChessNow() || s.getPiece().pieceMakesChess()) {
+					}
+					if (s.hasPiece()) {
+						if (Square.chessCheck() && !thisChess) {
+							if (s.isKingHere() && s.OppositeColor(this)) {
+								s.itsChessNow();
+								thisChess = true;
+								Square.tempPiece = this;
+								this.showMove(sq);
+							}
+						}
+
+						if (thisChess && s.isKingHere()) {
+							s.addChessMove();
+						}
+
+						if (!thisChess
+								&& (s.OppositeColor(this) && !Square.isChessNow() || s.getPiece().pieceMakesChess())) {
 							s.addPredict();
 						}
 					}
